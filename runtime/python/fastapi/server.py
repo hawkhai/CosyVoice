@@ -43,6 +43,12 @@ def generate_data(model_output):
         yield tts_audio
 
 
+@app.get("/list_spks")
+@app.post("/list_spks")
+async def list_spks():
+    return {"available_spks": cosyvoice.list_available_spks()}
+
+
 @app.get("/inference_sft")
 @app.post("/inference_sft")
 async def inference_sft(tts_text: str = Form(), spk_id: str = Form()):
@@ -92,4 +98,5 @@ if __name__ == '__main__':
                         help='local path or modelscope repo id')
     args = parser.parse_args()
     cosyvoice = AutoModel(model_dir=args.model_dir)
+    logging.info('Available speakers: {}'.format(cosyvoice.list_available_spks()))
     uvicorn.run(app, host="0.0.0.0", port=args.port)
